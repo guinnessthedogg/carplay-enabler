@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3  # Updated to v3
 
     - name: Setup Environment
       run: |
@@ -20,8 +20,12 @@ jobs:
 
     - name: Sign DiskProbe.ipa
       run: |
-        chmod +x .github/scripts/sign_script2.sh
-        ./.github/scripts/sign_script2.sh DiskProbe.ipa
+        chmod +x .github/scripts/sign_script.sh
+        ./.github/scripts/sign_script.sh DiskProbe.ipa
+
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
     - name: Create Release
       id: create_release
@@ -29,8 +33,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically creates this token
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        release_name: Release ${{ steps.get_version.outputs.VERSION }}
         draft: false
         prerelease: false
 
