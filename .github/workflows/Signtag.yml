@@ -2,44 +2,47 @@ name: Sign and Release DiskProbe App
 
 on:
   push:
-    tags:
-      - '*'  # Trigger on any tag push
+    branches:
+      - main  # or any specific branch
 
 jobs:
   sign-and-release:
     runs-on: macos-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Setup Environment
-      run: |
-        brew install libimobiledevice
-        # Any other environment setup
+      - name: Setup Environment
+        run: |
+          brew install libimobiledevice
+          # Any other environment setup
 
-    - name: Sign DiskProbe.ipa
-      run: |
-        chmod +x .github/scripts/sign_script2.sh
-        ./.github/scripts/sign_script2.sh DiskProbe.ipa
+      - name: Sign DiskProbe.ipa
+        run: |
+          chmod +x .github/scripts/sign_script.sh
+          ./.github/scripts/sign_script.sh DiskProbe.ipa
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: false
+      - name: Define Tag Name
+        id: tag_name
+        run: echo ::set-output name=TAG_NAME::"Beta-$(date +'%Y%m%d%H%M%S')"
 
-    - name: Upload IPA to Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./DiskProbe.ipa
-        asset_name: DiskProbe.ipa
-        asset_content_type: application/octet-stream
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_name.outputs.TAG_NAME }}
+          release_name: Release ${{ steps.tag_name.outputs.TAG_NAME }}
+          draft: false
+          prerelease: false
+
+      - name: Upload IPA to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./DiskProbe.ipa
+          asset_name: DiskProbe.ipa
+          asset_content_type: application/octet-stream
