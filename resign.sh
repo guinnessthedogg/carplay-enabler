@@ -28,9 +28,9 @@ if [ -f "Payload/$app/embedded.mobileprovision" ]; then
 
 	security cms -D -i "Payload/$app/embedded.mobileprovision" > provision.plist
 	/usr/libexec/PlistBuddy -x -c 'Print:Entitlements' provision.plist > entitlements.plist
-	/usr/libexec/PlistBuddy -x -c "Merge ../CarPlay.entitlements" entitlements.plist
+	/usr/libexec/PlistBuddy -x -c "Merge ../DiskProbe.entitlements" entitlements.plist
 
-	echo "Signing with CarPlay entitlement"
+	echo "Signing with DiskProbe entitlement"
 	uname=$(id -un)
 	codesign -d --entitlements entitlements.plist -f -s "Apple Development: $uname" Payload/$app
 
@@ -48,7 +48,7 @@ else
 	echo "Generating entitlement"
 	uname=$(id -un)
 	codesign -d --entitlements ../CarPlay.entitlements -f -s "Apple Development: $uname" Payload/$app
-	signed=$(codesign -d --entitlements - "Payload/$app" | grep -c "com.apple.developer.carplay-maps")
+	signed=$(codesign -d --entitlements - "Payload/$app" | grep -c "com.apple.developer.DiskProbe-maps")
 	if [ $signed > 0 ]; then
 		echo "Signed succesfully!"
 		zip -r "$app.ipa" Payload -q
