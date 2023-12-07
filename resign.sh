@@ -34,7 +34,7 @@ if [ -f "Payload/$app/embedded.mobileprovision" ]; then
 	uname=$(id -un)
 	codesign -d --entitlements entitlements.plist -f -s "Apple Development: $uname" Payload/$app
 
-	signed=$(codesign -d --entitlements - "Payload/$app" | grep -c "com.apple.developer.carplay-maps")
+	signed=$(codesign -d --entitlements - "Payload/$app" | grep -c "com.creaturecoding.DiskProbe")
 	if [ $signed > 0 ]; then
 		echo "Signed succesfully!"
 		zip -r "$app.ipa" Payload -q
@@ -47,8 +47,8 @@ if [ -f "Payload/$app/embedded.mobileprovision" ]; then
 else
 	echo "Generating entitlement"
 	uname=$(id -un)
-	codesign -d --entitlements ../CarPlay.entitlements -f -s "Apple Development: $uname" Payload/$app
-	signed=$(codesign -d --entitlements - "Payload/$app" | grep -c "com.apple.developer.DiskProbe-maps")
+	codesign -d --entitlements ../DiskProbe.entitlements -f -s "Apple Development: $uname" Payload/$app
+	signed=$(codesign -d --entitlements - "Payload/$app" | grep -c "com.creaturecoding.DiskProbe")
 	if [ $signed > 0 ]; then
 		echo "Signed succesfully!"
 		zip -r "$app.ipa" Payload -q
