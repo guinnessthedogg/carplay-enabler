@@ -28,6 +28,7 @@ jobs:
         run: echo ::set-output name=TAG_NAME::"Beta-$(date +'%Y%m%d%H%M%S')"
 
       - name: Create Release
+        id: create_release  # This ID is important
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +43,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  # Correctly reference the output here
           asset_path: ./DiskProbe.ipa
           asset_name: DiskProbe.ipa
           asset_content_type: application/octet-stream
