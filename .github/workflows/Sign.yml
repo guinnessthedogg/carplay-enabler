@@ -1,0 +1,24 @@
+name: Sign DiskProbe App
+
+on:
+  push:
+    branches:
+      - main  # or any branch you want to trigger this action
+
+jobs:
+  sign-app:
+    runs-on: macos-latest  # Use macOS runner as you're dealing with iOS app
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Environment
+      run: |
+        brew install libimobiledevice
+        # Any other environment setup you need
+
+    - name: Sign DiskProbe.ipa
+      run: |
+        chmod +x .github/scripts/sign_script.sh
+        ./.github/scripts/sign_script.sh DiskProbe.ipa
